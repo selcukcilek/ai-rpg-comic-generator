@@ -263,14 +263,18 @@
         // ==========================================
         // GELİŞTİRİCİ AYARLARI (GITHUB İÇİN)
         // ==========================================
+        const normalizeApiKey = (value) => typeof value === 'string' ? value.trim() : '';
+        const GROQ_API_KEY_FROM_URL = normalizeApiKey(new URLSearchParams(window.location.search).get('groq_api_key'));
+
+        if (GROQ_API_KEY_FROM_URL) {
+            localStorage.setItem('GROQ_API_KEY', GROQ_API_KEY_FROM_URL);
+        }
+
         const CONFIG = {
-            // DİKKAT: Kendi GROQ API Key'inizi aşağıdaki tırnak işaretleri arasına yapıştırın.
-            // Örnek: "gsk_1234567890abcdef..."
-            // Projeyi GitHub'a yüklediğinizde siteye giren herkes bu key'i kullanarak ücretsiz işlem yapacaktır.
-				GROQ_API_KEY: secrets.GROQ_API_KEY
-        <!-- 
-		}; 
-		-->
+            // DİKKAT: Bu uygulama frontend olduğu için GitHub secret'larına doğrudan erişemez.
+            // Anahtarı bir kez URL parametresiyle verin (?groq_api_key=gsk_...) veya localStorage.GROQ_API_KEY olarak saklayın.
+            GROQ_API_KEY: GROQ_API_KEY_FROM_URL || normalizeApiKey(localStorage.getItem('GROQ_API_KEY')) || "BURAYA_API_KEY_GELECEK"
+        };
         // ==========================================
 
         const UI = {
@@ -332,7 +336,7 @@
             
             // Eğer geliştirici key girmemişse uyarı göster ve butonu kilitle
             if (!key || key === "BURAYA_API_KEY_GELECEK") {
-                UI.modelSelect.innerHTML = '<option value="">Lütfen Koda API Key Ekleyin!</option>';
+                UI.modelSelect.innerHTML = '<option value="">Önce GROQ API Key Tanımlayın!</option>';
                 UI.startBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 UI.startBtn.textContent = "API KEY EKSİK";
                 return;
@@ -376,7 +380,7 @@
             const topic = UI.topicInput.value.trim();
             
             if (!key || key === "BURAYA_API_KEY_GELECEK") {
-                showCustomAlert("<strong>Geliştirici Uyarısı:</strong><br><br>Projeyi kullanmadan önce kodun içindeki <code>CONFIG.GROQ_API_KEY</code> alanına kendi GROQ API anahtarınızı yapıştırmalısınız!");
+                showCustomAlert("<strong>Geliştirici Uyarısı:</strong><br><br>Uygulamayı açarken URL'e <code>?groq_api_key=GSK_ANAHTARINIZ</code> ekleyin veya konsoldan <code>localStorage.setItem('GROQ_API_KEY','GSK_ANAHTARINIZ')</code> çalıştırın.");
                 return;
             }
 
